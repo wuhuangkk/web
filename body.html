@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>形体美学与结构档案 - 回声实验室</title>
+    <style>
+        /* --- 视觉基调：极简人体工程学科研风 --- */
+        body {
+            margin: 0; padding: 0;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", sans-serif;
+            min-height: 100vh; display: flex; justify-content: center; align-items: flex-start;
+            overflow-x: hidden; -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            width: 100%; max-width: 520px; min-height: 100vh;
+            background: #ffffff;
+            display: flex; flex-direction: column; padding: 30px 24px; box-sizing: border-box;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        }
+
+        /* --- 顶部 Header --- */
+        .header-title { text-align: center; margin: 0 0 25px 0; border-bottom: 2px solid #2563eb; padding-bottom: 20px;}
+        .brand-logo { font-size: 11px; color: #2563eb; font-family: monospace; letter-spacing: 1px; font-weight: bold; margin-bottom: 8px; display: block;}
+        h1 { font-size: 21px; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: 1px;}
+        .subtitle { font-size: 12px; color: #64748b; margin-top: 8px; line-height: 1.6; text-transform: uppercase; font-family: monospace;}
+        
+        .badge-bar { display: flex; justify-content: center; gap: 8px; margin-top: 15px; }
+        .badge { background: #f8fafc; color: #334155; font-size: 10px; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-family: monospace; border: 1px solid #cbd5e1;}
+
+        /* --- 表单输入区 --- */
+        .input-group { margin-bottom: 22px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; position: relative;}
+        .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px;}
+        .input-label { font-size: 14px; font-weight: 800; color: #0f172a; }
+        
+        .btn-guide { background: #2563eb; color: #fff; border: none; font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 4px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px;}
+        .btn-guide:active { background: #1d4ed8; }
+        
+        .input-wrapper { display: flex; align-items: center; margin-bottom: 10px;}
+        .input-wrapper:last-child { margin-bottom: 0; }
+        .input-field { 
+            flex: 1; padding: 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; 
+            outline: none; transition: 0.2s; box-sizing: border-box; background: #fff; font-family: monospace; color: #0f172a; font-weight: bold;
+        }
+        .input-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .unit { margin-left: 10px; font-size: 13px; color: #64748b; font-weight: bold; width: 25px; text-align: center;}
+
+        /* --- 核心工程测绘图区 --- */
+        .guide-box { display: none; margin-top: 15px; padding: 15px; background: #fff; border-radius: 6px; border: 1px solid #e2e8f0; box-shadow: inset 0 0 15px rgba(0,0,0,0.02);}
+        .guide-box.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        .svg-container { 
+            text-align: center; margin-bottom: 15px; background-color: #f8fafc; 
+            background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
+            background-size: 15px 15px; border-radius: 6px; border: 1px solid #cbd5e1; padding: 10px;
+            overflow: hidden;
+        }
+        
+        .guide-text { font-size: 13px; color: #334155; line-height: 1.7; text-align: justify; border-left: 3px solid #2563eb; padding-left: 10px;}
+        .guide-text strong { color: #2563eb; }
+
+        /* --- 安全须知说明框 --- */
+        .notice-box { 
+            background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 15px;
+            font-size: 11px; color: #64748b; line-height: 1.6; margin-top: 5px; text-align: justify;
+        }
+        .notice-box strong { color: #334155; }
+
+        .btn-main {
+            background: #0f172a; color: #fff; font-weight: bold; padding: 18px; border-radius: 8px; font-size: 15px; width: 100%;
+            cursor: pointer; margin: 20px 0; border: none; transition: 0.2s; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(15,23,42,0.15);
+        }
+        .btn-main:active { transform: translateY(2px); box-shadow: none; }
+
+        /* --- 结果报告区 --- */
+        .result-section { display: none; animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
+
+        .report-header { font-size: 11px; color: #64748b; border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; font-family: monospace; font-weight: bold;}
+        
+        /* --- 原始数据凭证区 --- */
+        .raw-data-box {
+            background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 25px;
+        }
+        .raw-data-title { font-size: 11px; color: #64748b; font-weight: bold; margin-bottom: 10px; text-align: center; letter-spacing: 1px; }
+        .raw-data-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .raw-data-item { display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        .raw-item-label { color: #475569; }
+        .raw-item-val { font-weight: bold; font-family: monospace; color: #0f172a; }
+
+        .data-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 22px; margin-bottom: 18px; border-left: 5px solid #2563eb; position: relative;}
+        .card-title { font-size: 14px; color: #0f172a; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between;}
+        .card-title-eng { font-size: 11px; color: #94a3b8; font-weight: normal; font-family: monospace;}
+        
+        .card-value-row { display: flex; align-items: baseline; margin-bottom: 12px; }
+        .card-val { font-size: 28px; font-weight: 900; color: #2563eb; margin-right: 15px; font-family: monospace;}
+        
+        .card-tag { font-size: 13px; padding: 5px 12px; border-radius: 4px; font-weight: bold; background: #eff6ff; color: #0f172a; border: 1px solid #bfdbfe; letter-spacing: 0.5px;}
+
+        .card-desc { font-size: 13.5px; color: #334155; line-height: 1.7; text-align: justify; background: #f8fafc; padding: 15px; border-radius: 6px; border: 1px solid #f1f5f9;}
+
+        .watermark { text-align: center; font-size: 12px; color: #94a3b8; margin-top: 35px; line-height: 1.8; font-family: monospace; }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="page-input">
+        <div class="header-title">
+            <span class="brand-logo">PWR BY: ECHO LAB (回声实验室)</span>
+            <h1>形体美学五大比例档案</h1>
+            <div class="subtitle">AESTHETIC PROPORTION ASSESSMENT</div>
+            <div class="badge-bar">
+                <span class="badge">头身比</span>
+                <span class="badge">头肩比</span>
+                <span class="badge">腿身比</span>
+                <span class="badge">腰臀比</span>
+            </div>
+        </div>
+
+        <div id="form-area">
+            <div class="input-group">
+                <div class="input-header">
+                    <span class="input-label">I. 纵向测量数据 (长)</span>
+                    <button class="btn-guide" onclick="toggleGuide('g-vertical')">◧ 测量图示</button>
+                </div>
+                <div class="input-wrapper"><input type="number" id="v-height" class="input-field" placeholder="1. 身高 Height"><span class="unit">cm</span></div>
+                <div class="input-wrapper"><input type="number" id="v-sit" class="input-field" placeholder="2. 坐高 Sitting Height"><span class="unit">cm</span></div>
+                <div class="input-wrapper"><input type="number" id="v-head-h" class="input-field" placeholder="3. 全头高 Head Height"><span class="unit">cm</span></div>
+                
+                <div id="g-vertical" class="guide-box">
+                    <div class="svg-container">
+                        <svg width="100%" height="160" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="25" y="5" width="5" height="130" fill="#cbd5e1" />
+                            <text x="5" y="70" font-size="8" fill="#64748b" transform="rotate(-90 10,70)">WALL</text>
+                            <rect x="30" y="85" width="45" height="35" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+                            
+                            <g fill="#ffffff" stroke="#0f172a" stroke-width="2" stroke-linejoin="round">
+                                <ellipse cx="42" cy="20" rx="12" ry="14"/>
+                                <path d="M 30 34 L 30 85 L 55 85 C 60 70, 52 50, 48 34 Z"/>
+                                <path d="M 30 70 L 85 70 C 90 70, 93 75, 93 80 C 93 85, 90 85, 85 85 L 30 85 Z"/>
+                                <path d="M 75 70 L 93 70 L 93 120 C 93 125, 85 125, 80 120 L 75 70 Z"/>
+                            </g>
+                            <line x1="20" y1="6" x2="65" y2="6" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2"/>
+                            <line x1="20" y1="34" x2="65" y2="34" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2"/>
+                            <line x1="20" y1="85" x2="65" y2="85" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="2"/>
+                            
+                            <text x="90" y="20" font-size="10" fill="#ef4444" font-weight="bold">头高 (顶-下巴)</text>
+                            <text x="90" y="50" font-size="10" fill="#2563eb" font-weight="bold">坐高 (顶-椅面)</text>
+                        </svg>
+                    </div>
+                    <div class="guide-text">
+                        <strong>全头高：</strong>挺直背部靠墙，测量【头顶最高点】至【下巴最低点】垂直直线距离。<br>
+                        <strong>坐高：</strong>坐在硬质平凳上，大腿平行地面，背部紧贴墙壁，测量【头顶最高点】至【椅面】垂直直线距离。
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="input-header">
+                    <span class="input-label">II. 横向直线宽度 (宽)</span>
+                    <button class="btn-guide" onclick="toggleGuide('g-width')">◧ 测量图示</button>
+                </div>
+                <div class="input-wrapper"><input type="number" id="v-head-w" class="input-field" placeholder="1. 头宽 Head Width"><span class="unit">cm</span></div>
+                <div class="input-wrapper"><input type="number" id="v-shoulder" class="input-field" placeholder="2. 肩宽 Shoulder Width"><span class="unit">cm</span></div>
+                
+                <div id="g-width" class="guide-box">
+                    <div class="svg-container">
+                        <svg width="100%" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 70 80 C 70 80, 50 80, 20 100 L 20 140 L 120 140 L 120 100 C 90 80, 70 80, 70 80 Z" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+                            <ellipse cx="70" cy="45" rx="20" ry="25" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+                            <path d="M 60 67 L 60 80 L 80 80 L 80 67 Z" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+                            
+                            <line x1="50" y1="45" x2="90" y2="45" stroke="#ef4444" stroke-width="2" stroke-dasharray="3"/>
+                            <line x1="20" y1="100" x2="120" y2="100" stroke="#2563eb" stroke-width="2" stroke-dasharray="3"/>
+                            
+                            <circle cx="50" cy="45" r="3" fill="#ef4444"/> <circle cx="90" cy="45" r="3" fill="#ef4444"/>
+                            <circle cx="20" cy="100" r="3" fill="#2563eb"/> <circle cx="120" cy="100" r="3" fill="#2563eb"/>
+                            
+                            <text x="70" y="38" font-size="10" fill="#ef4444" text-anchor="middle" font-weight="bold">头宽 (最宽处直线)</text>
+                            <text x="70" y="115" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="bold">肩宽 (双侧肩峰点直线)</text>
+                        </svg>
+                    </div>
+                    <div class="guide-text">
+                        <strong>注意：此处测量的是【直线距离】而非绕一圈的围度。</strong><br>
+                        <strong>头宽：</strong>面部正前方，左耳上方至右耳上方最宽直线距离。<br>
+                        <strong>肩宽：</strong>身体正前方，左侧肩峰点（肩膀最外侧骨点）至右侧肩峰点的直线距离。
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <div class="input-header">
+                    <span class="input-label">III. 水平环绕围度 (圈)</span>
+                    <button class="btn-guide" onclick="toggleGuide('g-circum')">◧ 测量图示</button>
+                </div>
+                <div class="input-wrapper" style="margin-bottom: 12px;"><input type="number" id="v-waist" class="input-field" placeholder="1. 腰围 Waist Circum."><span class="unit">cm</span></div>
+                <div class="input-wrapper"><input type="number" id="v-hip" class="input-field" placeholder="2. 臀围 Hip Circum."><span class="unit">cm</span></div>
+                
+                <div id="g-circum" class="guide-box">
+                    <div class="svg-container">
+                        <svg width="100%" height="150" viewBox="0 0 140 150" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 45 10 C 60 10, 80 10, 95 10 
+                                     C 110 30, 110 50, 95 70 
+                                     C 85 80, 85 90, 95 105 
+                                     C 105 120, 105 140, 90 140 
+                                     L 50 140 
+                                     C 35 140, 35 120, 45 105 
+                                     C 55 90, 55 80, 45 70 
+                                     C 30 50, 30 30, 45 10 Z" 
+                                  fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+                            
+                            <line x1="20" y1="75" x2="120" y2="75" stroke="#ef4444" stroke-width="2" stroke-dasharray="4"/>
+                            <circle cx="48" cy="75" r="3" fill="#ef4444"/>
+                            <circle cx="92" cy="75" r="3" fill="#ef4444"/>
+                            <text x="70" y="70" font-size="10" fill="#ef4444" text-anchor="middle" font-weight="bold">腰围 (最细处一圈)</text>
+                            
+                            <line x1="15" y1="120" x2="125" y2="120" stroke="#2563eb" stroke-width="2" stroke-dasharray="4"/>
+                            <circle cx="36" cy="120" r="3" fill="#2563eb"/>
+                            <circle cx="104" cy="120" r="3" fill="#2563eb"/>
+                            <text x="70" y="115" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="bold">臀围 (最突出处一圈)</text>
+                        </svg>
+                    </div>
+                    <div class="guide-text">
+                        <strong>注意：此处测量的是皮尺绕身体一圈的【水平围度】。</strong><br>
+                        <strong>腰围：</strong>自然呼气末尾，皮尺水平环绕肋骨与骨盆之间的最细处一圈。<br>
+                        <strong>臀围：</strong>被测者直立，皮尺水平环绕臀部向后最突出部位一圈。
+                    </div>
+                </div>
+            </div>
+
+            <div class="notice-box">
+                <strong>系统运算须知：</strong>本工具算法基于通用服装工程学与视觉美学几何模型构建。受限于手工测量容差，输出结果仅供个人形体风格与穿搭视觉比例参考。数据仅在您的浏览器本地进行数学运算，无任何隐私上传。
+            </div>
+
+            <button class="btn-main" onclick="calculateReport()">启动算法 · 生成比例档案</button>
+        </div>
+    </div>
+
+    <div id="page-result" class="result-section">
+        <div class="report-header">
+            <span>流水号: ECHO-<span id="res-id"></span></span>
+            <span>生成时间: <span id="res-time"></span></span>
+        </div>
+
+        <h1 style="text-align: center; margin-bottom: 20px; font-size: 20px;">形体五大黄金比例结果</h1>
+
+        <div class="raw-data-box">
+            <div class="raw-data-title">RAW DATA / 录入数据凭证</div>
+            <div class="raw-data-grid">
+                <div class="raw-data-item"><span class="raw-item-label">1. 身高</span><span class="raw-item-val" id="disp-h">-- cm</span></div>
+                <div class="raw-data-item"><span class="raw-item-label">2. 坐高</span><span class="raw-item-val" id="disp-sit">-- cm</span></div>
+                <div class="raw-data-item"><span class="raw-item-label">3. 全头高</span><span class="raw-item-val" id="disp-head-h">-- cm</span></div>
+                <div class="raw-data-item"><span class="raw-item-label">4. 头宽</span><span class="raw-item-val" id="disp-head-w">-- cm</span></div>
+                <div class="raw-data-item"><span class="raw-item-label">5. 肩宽</span><span class="raw-item-val" id="disp-shoulder">-- cm</span></div>
+                <div class="raw-data-item"><span class="raw-item-label">6. 腰围</span><span class="raw-item-val" id="disp-waist">-- cm</span></div>
+                <div class="raw-data-item"><span class="raw-item-label">7. 臀围</span><span class="raw-item-val" id="disp-hip">-- cm</span></div>
+            </div>
+        </div>
+
+        <div class="data-card">
+            <div class="card-title">
+                <span>I. 头身比</span>
+                <span class="card-title-eng">Head-to-Body Ratio</span>
+            </div>
+            <div class="card-value-row">
+                <span class="card-val" id="res-head-val">--</span>
+                <span class="card-tag" id="res-head-tag">--</span>
+            </div>
+            <div class="card-desc" id="res-head-desc">--</div>
+        </div>
+
+        <div class="data-card">
+            <div class="card-title">
+                <span>II. 头肩比</span>
+                <span class="card-title-eng">Head-to-Shoulder Ratio</span>
+            </div>
+            <div class="card-value-row">
+                <span class="card-val" id="res-hs-val">--</span>
+                <span class="card-tag" id="res-hs-tag">--</span>
+            </div>
+            <div class="card-desc" id="res-hs-desc">--</div>
+        </div>
+
+        <div class="data-card">
+            <div class="card-title">
+                <span>III. 腿身比 (马斯卡指数)</span>
+                <span class="card-title-eng">Skelic Index</span>
+            </div>
+            <div class="card-value-row">
+                <span class="card-val" id="res-leg-val">--</span>
+                <span class="card-tag" id="res-leg-tag">--</span>
+            </div>
+            <div class="card-desc" id="res-leg-desc">--</div>
+        </div>
+
+        <div class="data-card">
+            <div class="card-title">
+                <span>IV. 腰臀比</span>
+                <span class="card-title-eng">Waist-to-Hip Ratio</span>
+            </div>
+            <div class="card-value-row">
+                <span class="card-val" id="res-whr-val">--</span>
+                <span class="card-tag" id="res-whr-tag">--</span>
+            </div>
+            <div class="card-desc" id="res-whr-desc">--</div>
+        </div>
+
+        <div class="data-card">
+            <div class="card-title">
+                <span>V. 骨架体型分类</span>
+                <span class="card-title-eng">Body Shape Index</span>
+            </div>
+            <div class="card-value-row">
+                <span class="card-val" id="res-shape-val">--</span>
+                <span class="card-tag" id="res-shape-tag">--</span>
+            </div>
+            <div class="card-desc" id="res-shape-desc">--</div>
+        </div>
+
+        <div class="watermark">
+            [ 操作提示 ] 截屏保存当前比例数据以完成建档<br>
+            © 回声实验室 (Echo Lab) | 算法遵循人体形态学规范
+        </div>
+
+        <button class="btn-main" style="background:#fff; color:#0f172a; border:2px solid #cbd5e1; margin-top:25px; box-shadow:none;" onclick="location.reload()">清除数据，重新测算</button>
+    </div>
+
+</div>
+
+<script>
+    function toggleGuide(id) {
+        const el = document.getElementById(id);
+        el.classList.toggle('active');
+    }
+
+    function calculateReport() {
+        // 安全获取元素，去除了残留的体重获取逻辑
+        const elH = document.getElementById('v-height');
+        const elSit = document.getElementById('v-sit');
+        const elHeadH = document.getElementById('v-head-h');
+        const elHeadW = document.getElementById('v-head-w');
+        const elShoulder = document.getElementById('v-shoulder');
+        const elWaist = document.getElementById('v-waist');
+        const elHip = document.getElementById('v-hip');
+
+        if(!elH || !elSit || !elHeadH || !elHeadW || !elShoulder || !elWaist || !elHip) return;
+
+        const h = parseFloat(elH.value);
+        const sit = parseFloat(elSit.value);
+        const headH = parseFloat(elHeadH.value);
+        const headW = parseFloat(elHeadW.value);
+        const shoulderW = parseFloat(elShoulder.value);
+        const waist = parseFloat(elWaist.value);
+        const hip = parseFloat(elHip.value);
+
+        if(!h || !sit || !headH || !headW || !shoulderW || !waist || !hip) {
+            alert("系统提示：必须完整录入 7 项基准测绘数据，以确保算法比对的严谨性。");
+            return;
+        }
+
+        // --- 生成精准时间戳 (仅到分钟) ---
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('res-time').innerText = `${yyyy}.${mm}.${dd} ${hh}:${min}`;
+
+        // --- 核心数学计算 ---
+        const headRatio = (h / headH).toFixed(1);
+        const hsRatio = (shoulderW / headW).toFixed(2);
+        const skelic = (((h - sit) / sit) * 100).toFixed(1);
+        const whr = (waist / hip).toFixed(2);
+        
+        document.getElementById('res-id').innerText = Math.random().toString().substr(2, 8).toUpperCase();
+
+        // --- 注入原始数据回显区 (仅显示这 7 项) ---
+        document.getElementById('disp-h').innerText = h + " cm";
+        document.getElementById('disp-sit').innerText = sit + " cm";
+        document.getElementById('disp-head-h').innerText = headH + " cm";
+        document.getElementById('disp-head-w').innerText = headW + " cm";
+        document.getElementById('disp-shoulder').innerText = shoulderW + " cm";
+        document.getElementById('disp-waist').innerText = waist + " cm";
+        document.getElementById('disp-hip').innerText = hip + " cm";
+
+        // 【1. 头身比】
+        let headTag, headDesc;
+        if(headRatio >= 7.5) {
+            headTag = "优越头身比 (高比重区)"; 
+            headDesc = "数值 ≥ 7.5。在视觉比例中，头部体块占比极小。躯干在纵向上呈现极强的延展性，该比例通常作为专业视觉工程（如模特体测）的极值参考，属于俗称的“九头身/八头身”优越区间。";
+        } else if(headRatio >= 7.0) {
+            headTag = "标准长线型 (中上偏离)"; 
+            headDesc = "数值落入 7.0 - 7.4。属于群体样本中，高于平均阈值的长线性视觉分布。物理重心上移，使得身体躯干在视觉呈现上具备优秀的几何修长感。";
+        } else {
+            headTag = "均衡/幼态型 (聚拢区)"; 
+            headDesc = "数值 < 7.0。符合常规正态分布。空间美学上由于头部空间占比较大，在人类视觉评估模型中，该特征通常伴随较强的幼态亲和力与结构稳定性。";
+        }
+        document.getElementById('res-head-val').innerText = headRatio;
+        document.getElementById('res-head-tag').innerText = headTag;
+        document.getElementById('res-head-desc').innerText = headDesc;
+
+        // 【2. 头肩比】
+        let hsTag, hsDesc;
+        if(hsRatio >= 2.5) {
+            hsTag = "宽肩衣架子 (倒三角倾向)"; 
+            hsDesc = "肩宽为头宽的 2.5 倍及以上。肩部横向拉伸感极强，能够完美撑起服装轮廓。在形态学上容易形成极其优越的‘头包脸’及‘直角肩’视觉效应。";
+        } else if(hsRatio >= 2.2) {
+            hsTag = "标准头肩比 (均衡发育)"; 
+            hsDesc = "肩宽为头宽的 2.2 - 2.49 倍。这是亚洲人群中最标准的骨骼发育比例，肩部宽度适中，整体仪态端正和谐，不存在视觉失衡。";
+        } else {
+            hsTag = "窄肩小骨架 (内收型)"; 
+            hsDesc = "肩宽低于头宽的 2.2 倍。肩部横向发育较为收敛，骨架量感偏小。视觉上给人以娇小、骨感的特征，属于典型的窄肩形态。";
+        }
+        document.getElementById('res-hs-val').innerText = hsRatio;
+        document.getElementById('res-hs-tag').innerText = hsTag;
+        document.getElementById('res-hs-desc').innerText = hsDesc;
+
+        // 【3. 腿身比】
+        let legTag, legDesc;
+        if(skelic >= 85.0) {
+            legTag = "长腿型 (Makroskelic)"; 
+            legDesc = "下肢绝对长度指标优秀。躯干与下肢的骨骼比例差处于标准界定的高位区间，整体人体力学的支撑铰链点偏高，视觉上具备显著的‘长腿效应’。";
+        } else if(skelic >= 80.0) {
+            legTag = "中等型 (Mesoskelic)"; 
+            legDesc = "符合广泛数据样本的基线骨架特征。上下半身的绝对长度物理分配均衡，是具备极强静力学稳定性的常规支撑构造。";
+        } else {
+            legTag = "短腿型 (Brachyskelic)"; 
+            legDesc = "脊柱及躯干轴线长度大于下肢骨骼长度。人体物理质量重心偏低，这使得下肢在承载压力时底盘更为稳固，抗位移的能力较强。";
+        }
+        document.getElementById('res-leg-val').innerText = skelic;
+        document.getElementById('res-leg-tag').innerText = legTag;
+        document.getElementById('res-leg-desc').innerText = legDesc;
+
+        // 【4. 腰臀比】
+        let whrTag, whrDesc;
+        if(whr <= 0.75) {
+            whrTag = "沙漏极值型 (High Contrast)"; 
+            whrDesc = "核心区围度比值处于低极值点。腰部与骨盆水平围度存在极大的差值，躯干中段呈现明显的内收折角，视觉上形成强烈的空间曲线张力。";
+        } else if (whr <= 0.80) {
+            whrTag = "标准均衡型 (Standard)"; 
+            whrDesc = "符合权威期刊界定的标准核心围度分布。腰盆连接处的外廓线条呈现平缓、顺滑的过渡状态，视觉量感分布极其均匀且不突兀。";
+        } else {
+            whrTag = "核心量感型 (Central Volume)"; 
+            whrDesc = "腰部环绕围度与骨盆围度接近。躯干的核心质量与视觉重心向腹部中段集中，整体框架呈现向直筒化过渡的实量体块感特征。";
+        }
+        document.getElementById('res-whr-val').innerText = whr;
+        document.getElementById('res-whr-tag').innerText = whrTag;
+        document.getElementById('res-whr-desc').innerText = whrDesc;
+
+        // 【5. 体型定型】
+        let estShoulderCircum = shoulderW * 2.5;
+        let shapeVal, shapeTag, shapeDesc;
+        
+        let hipToShoulder = (hip - estShoulderCircum) / estShoulderCircum;
+        let shoulderToHip = (estShoulderCircum - hip) / hip;
+        let avgTopBottom = (estShoulderCircum + hip) / 2;
+        let waistDiff = (avgTopBottom - waist) / avgTopBottom;
+
+        if (hipToShoulder > 0.05) {
+            shapeVal = "A 型 (梨型)"; shapeTag = "正三角底位拓扑"; 
+            shapeDesc = "骨盆外缘水平围度，显著大于肩部外廓估算围度。躯干的空间质量中心沉降并集中于下半骨盆区，呈现底盘宽大的几何特征。";
+        } else if (shoulderToHip > 0.05) {
+            shapeVal = "V 型 (倒三角)"; shapeTag = "倒三角高位拓扑"; 
+            shapeDesc = "双侧肩峰外廓，显著大于骨盆围度。上半躯干骨架量感占据主导优势，呈现肩宽跨窄的倒置几何力学特征。";
+        } else {
+            if (waistDiff > 0.20) { 
+                shapeVal = "X 型 (沙漏型)"; shapeTag = "收敛漏斗形拓扑"; 
+                shapeDesc = "双肩与骨盆外围尺寸基本等同，且核心腰部水平围度出现显著收窄。属于具有强烈曲线折角的向心收缩结构。";
+            } else {
+                shapeVal = "H 型 (直筒型)"; shapeTag = "矩形直筒拓扑"; 
+                shapeDesc = "肩、腰、臀的三项核心水平数值差距极小。躯干两侧边缘线条呈上下平行的直筒状物理发育特征，全段无明显横向内收敛。";
+            }
+        }
+        
+        document.getElementById('res-shape-val').innerText = shapeVal;
+        document.getElementById('res-shape-tag').innerText = shapeTag;
+        document.getElementById('res-shape-desc').innerText = shapeDesc;
+
+        document.getElementById('page-input').style.display = 'none';
+        document.getElementById('page-result').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
